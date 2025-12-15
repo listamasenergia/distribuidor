@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de precios</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 10px; }
+    input { padding: 10px; width: 100%; max-width: 420px; margin-bottom: 15px; font-size: 16px; }
+    table { border-collapse: collapse; width: 100%; }
+    thead th { position: sticky; top: 0; background: #f04b2c; color: #fff; padding: 8px; }
+    td, th { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+
+<h1>Lista de precios</h1>
+<input type="text" id="buscador" placeholder="Buscar producto, código o descripción..." />
+
+<table id="tabla">
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Rubro</th>
+      <th>Descripción</th>
+      <th>Presentación</th>
+      <th>Precio</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const CSV_URL = https://docs.google.com/spreadsheets/d/e/2PACX-1vTS-qhCtS2RPuUlzZIbYz1xhwkn5Bfg9LDFa72HPB6KPuFZgWnyWZkq750-_bMwS5uEg-LXNdEuQBGA/pub?gid=974304874&single=true&output=csv
+;
+
+fetch(CSV_URL)
+  .then(r => r.text())
+  .then(texto => {
+    const filas = texto.split('\n').slice(1);
+    const tbody = document.querySelector('#tabla tbody');
+
+    filas.forEach(linea => {
+      if (!linea.trim()) return;
+      const cols = linea.split(';');
+      const tr = document.createElement('tr');
+
+      [0,1,2,3,5].forEach(i => {
+        const td = document.createElement('td');
+        td.textContent = cols[i] || '';
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  });
+
+document.getElementById('buscador').addEventListener('keyup', function () {
+  const texto = this.value.toLowerCase();
+  document.querySelectorAll('#tabla tbody tr').forEach(fila => {
+    fila.style.display = fila.innerText.toLowerCase().includes(texto) ? '' : 'none';
+  });
+});
+</script>
+
+</body>
+</html>
